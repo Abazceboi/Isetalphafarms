@@ -1,0 +1,170 @@
+
+/* ====================================
+   SPLIT HERO SECTION (NEW LAYOUT)
+   ==================================== */
+.split-hero {
+    display: block; /* override display: flex from old .hero */
+    padding: 0;
+    min-height: auto;
+    background: #113424; /* Dark organic green */
+}
+
+.hero-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    min-height: 90vh;
+    position: relative;
+    z-index: 10;
+}
+
+.hero-left {
+    flex: 1;
+    min-width: 50%;
+    padding: 120px 5% 150px 8%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 20;
+}
+
+.hero-right {
+    flex: 1;
+    min-width: 50%;
+    position: relative;
+    border-top-left-radius: 120px;
+    border-bottom-left-radius: 120px;
+    overflow: hidden;
+}
+
+.hero-split-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.split-hero .hero-content {
+    text-align: left;
+    max-width: 600px;
+    padding: 0;
+    margin: 0;
+}
+
+.split-hero .hero-headline {
+    display: block; /* override old display: flex */
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    color: #ffffff;
+    text-shadow: none;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.split-hero .hero-subheading {
+    margin-left: 0;
+    margin-right: 0;
+    text-align: left;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: none;
+    max-width: 500px;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+.split-hero .hero-subheading::before {
+    display: none;
+}
+
+.split-hero .hero-buttons {
+    justify-content: flex-start;
+    margin-bottom: 0;
+}
+
+.split-hero .hero-btn-primary {
+    background: #f97316; /* Solid orange */
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+    border-radius: 50px;
+    padding: 16px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+}
+
+.split-hero .hero-btn-primary:hover {
+    background: #ea580c;
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+    transform: translateY(-3px);
+}
+
+.split-hero .hero-btn-primary::after {
+    display: none; /* override old button shine */
+}
+
+/* Bottom Wave */
+.hero-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 30;
+}
+
+.hero-wave svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 120px;
+}
+
+/* Responsive Stacking */
+@media (max-width: 992px) {
+    .hero-container {
+        flex-direction: column;
+    }
+    
+    .hero-left {
+        min-width: 100%;
+        padding: 100px 5% 60px 5%;
+        align-items: center;
+    }
+    
+    .split-hero .hero-content {
+        text-align: center;
+    }
+    
+    .split-hero .hero-subheading {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+    
+    .split-hero .hero-buttons {
+        justify-content: center;
+    }
+    
+    .hero-right {
+        min-width: 100%;
+        min-height: 450px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-right {
+        min-height: 350px;
+        border-top-right-radius: 60px;
+    }
+    .hero-wave svg {
+        height: 60px;
+    }
+}
