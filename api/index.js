@@ -4,10 +4,9 @@ const cors = require('cors');
 const path = require('path');
 const session = require('express-session');
 const nodemailer = require('nodemailer');
-const db = require('./database');
+const db = require('../database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // ==========================================
 // MIDDLEWARE
@@ -31,18 +30,8 @@ const requireAdmin = (req, res, next) => {
     return res.status(401).json({ error: 'Unauthorized. Please login.' });
 };
 
-// Protect admin.html from being served statically
-app.use((req, res, next) => {
-    if (req.path === '/admin.html') {
-        if (!req.session || !req.session.admin) {
-            return res.redirect('/login.html');
-        }
-    }
-    next();
-});
-
-// Serve static files
-app.use(express.static(__dirname));
+// Vercel automatically serves static files, so we don't strictly need this, but keep it for local testing.
+app.use(express.static(path.join(__dirname, '..')));
 
 // ==========================================
 // EMAIL NOTIFICATIONS SETUP (NODEMAILER)
@@ -277,6 +266,5 @@ app.delete('/api/admin/products/:id', requireAdmin, (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Export the app for Vercel serverless function
+module.exports = app;
