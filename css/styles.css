@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GREEN HARVEST FARMS v2 - STYLESHEET
+   ISET ALPHA FARMS v2 - STYLESHEET
    ========================================================================== */
 
 /* --- VARIABLES & THEME --- */
@@ -939,3 +939,27 @@ img {
         border-bottom: 1px solid var(--border);
     }
 }
+
+/* ==========================================================================
+   CART & CHECKOUT MODAL STYLES
+   ========================================================================== */
+.cart-toggle { background: transparent; border: none; color: var(--text-main); font-size: 1.25rem; cursor: pointer; position: relative; padding: 0.5rem; }
+.cart-badge { position: absolute; top: 0; right: 0; background-color: var(--primary); color: white; font-size: 0.75rem; font-weight: 700; height: 18px; width: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: translate(25%, -25%); }
+.cart-overlay, .checkout-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+.cart-overlay.active, .checkout-modal-overlay.active { opacity: 1; visibility: visible; }
+.cart-sidebar { position: absolute; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100%; background: var(--bg-surface); display: flex; flex-direction: column; transition: right 0.3s ease; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+.cart-overlay.active .cart-sidebar { right: 0; }
+.cart-header, .checkout-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.close-cart, .close-checkout { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+.cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+.cart-item-details h4 { margin-bottom: 5px; }
+.cart-item-controls { display: flex; align-items: center; gap: 10px; }
+.cart-item-controls button { background: var(--bg-body); border: 1px solid var(--border); width: 25px; height: 25px; cursor: pointer; border-radius: 4px; }
+.cart-footer { padding: 20px; border-top: 1px solid var(--border); }
+.cart-total { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; margin-bottom: 15px; }
+.empty-cart-msg { text-align: center; color: var(--text-muted); margin-top: 20px; }
+.checkout-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 500px; background: var(--bg-surface); border-radius: 12px; transition: all 0.3s ease; }
+.checkout-modal-overlay.active .checkout-modal { transform: translate(-50%, -50%) scale(1); }
+.checkout-body { padding: 20px; }
+.checkout-note { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; }
