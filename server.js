@@ -101,6 +101,47 @@ app.post('/api/checkout', (req, res) => {
     });
 });
 
+// ==========================================
+// ADMIN DASHBOARD API ENDPOINTS
+// ==========================================
+
+// Get all contacts
+app.get('/api/admin/contacts', (req, res) => {
+    db.all(`SELECT * FROM contacts ORDER BY created_at DESC`, [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// Get all subscribers
+app.get('/api/admin/subscribers', (req, res) => {
+    db.all(`SELECT * FROM subscribers ORDER BY created_at DESC`, [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// Get all orders with items
+app.get('/api/admin/orders', (req, res) => {
+    db.all(`SELECT * FROM orders ORDER BY created_at DESC`, [], (err, orders) => {
+        if (err) return res.status(500).json({ error: err.message });
+        
+        db.all(`SELECT * FROM order_items`, [], (err, items) => {
+            if (err) return res.status(500).json({ error: err.message });
+            
+            // Attach items to their respective orders
+            const ordersWithItems = orders.map(order => {
+                return {
+                    ...order,
+                    items: items.filter(item => item.order_id === order.id)
+                };
+            });
+            
+            res.json(ordersWithItems);
+        });
+    });
+});
+
 // Start Server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
