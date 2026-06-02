@@ -1,10 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
-    /* --- THEME TOGGLE (Copied from main.js) --- */
+    // First check if logged in
+    try {
+        const res = await fetch('/api/admin/check');
+        const data = await res.json();
+        if (!data.loggedIn) {
+            window.location.href = '/login.html';
+            return;
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+        await fetch('/api/admin/logout', { method: 'POST' });
+        window.location.href = '/login.html';
+    });
+
+    /* --- THEME TOGGLE --- */
     const themeToggle = document.getElementById('theme-toggle');
     const htmlEl = document.documentElement;
     const icon = themeToggle.querySelector('i');
-
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -37,14 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetId = link.getAttribute('data-tab');
             if (!targetId) return;
 
-            // Update active states
             tabLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
 
             tabContents.forEach(content => content.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
 
-            // Update Title
             pageTitle.innerText = link.innerText;
         });
     });
@@ -54,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const d = new Date(dateStr);
         return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
     };
-
     const formatNaira = (amount) => '₦' + parseFloat(amount).toLocaleString();
 
     // Fetch Orders
@@ -78,9 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
                 itemsList += '</ul>';
-
                 const statusClass = order.status === 'completed' ? 'completed' : '';
-                
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>#${order.id}</td>
@@ -96,9 +108,84 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Failed to fetch orders:', error);
-            document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="8" style="color:red;">Error loading orders.</td></tr>';
         }
     };
+
+    // Fetch Products (Inventory)
+    const fetchProducts = async () => {
+        try {
+            const res = await fetch('/api/products');
+            const products = await res.json();
+            const tbody = document.getElementById('products-tbody');
+            tbody.innerHTML = '';
+            
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">No products found.</td></tr>';
+                return;
+            }
+
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                const imgTag = p.image_url ? `<img src="${p.image_url}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">` : 'No Image';
+                tr.innerHTML = `
+                    <td>${p.id}</td>
+                    <td>${imgTag}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category.toUpperCase()}</td>
+                    <td>${formatNaira(p.price)}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-prod-btn" data-id="${p.id}">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.delete-prod-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this product?')) {
+                        await fetch(`/api/admin/products/${id}`, { method: 'DELETE' });
+                        fetchProducts();
+                    }
+                });
+            });
+
+        } catch (error) {
+            console.error('Failed to fetch products:', error);
+        }
+    };
+
+    // Add Product
+    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.disabled = true;
+
+        const body = {
+            name: document.getElementById('prodName').value,
+            category: document.getElementById('prodCategory').value,
+            price: document.getElementById('prodPrice').value,
+            description: document.getElementById('prodDesc').value,
+            image_url: document.getElementById('prodImg').value
+        };
+
+        try {
+            const res = await fetch('/api/admin/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if(res.ok) {
+                e.target.reset();
+                fetchProducts();
+            } else {
+                alert('Failed to add product');
+            }
+        } catch(err) {
+            console.error(err);
+        }
+        btn.disabled = false;
+    });
 
     // Fetch Contacts
     const fetchContacts = async () => {
@@ -107,12 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const contacts = await res.json();
             const tbody = document.getElementById('contacts-tbody');
             tbody.innerHTML = '';
-            
-            if (contacts.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">No messages found.</td></tr>';
-                return;
-            }
-
+            if (contacts.length === 0) return tbody.innerHTML = '<tr><td colspan="5">No messages found.</td></tr>';
             contacts.forEach(contact => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -124,10 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 tbody.appendChild(tr);
             });
-        } catch (error) {
-            console.error('Failed to fetch contacts:', error);
-            document.getElementById('contacts-tbody').innerHTML = '<tr><td colspan="5" style="color:red;">Error loading messages.</td></tr>';
-        }
+        } catch (error) {}
     };
 
     // Fetch Subscribers
@@ -137,12 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const subs = await res.json();
             const tbody = document.getElementById('subscribers-tbody');
             tbody.innerHTML = '';
-            
-            if (subs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3">No subscribers found.</td></tr>';
-                return;
-            }
-
+            if (subs.length === 0) return tbody.innerHTML = '<tr><td colspan="3">No subscribers found.</td></tr>';
             subs.forEach(sub => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -152,15 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 tbody.appendChild(tr);
             });
-        } catch (error) {
-            console.error('Failed to fetch subscribers:', error);
-            document.getElementById('subscribers-tbody').innerHTML = '<tr><td colspan="3" style="color:red;">Error loading subscribers.</td></tr>';
-        }
+        } catch (error) {}
     };
 
     // Initial load
     fetchOrders();
+    fetchProducts();
     fetchContacts();
     fetchSubscribers();
-
 });

@@ -178,94 +178,10 @@
                 <button class="filter-btn" data-filter="fishery">Fishery</button>
             </div>
             
-            <div class="product-grid">
-                <!-- Poultry -->
-                <div class="product-card" data-category="poultry">
-                    <div class="card-img-wrapper">
-                        <img src="images/prod_broilers_1779837873590.png" alt="Broilers" loading="lazy">
-                        <span class="badge-tag">₦8,500</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Broilers</h3>
-                        <p>Healthy and well-vaccinated chickens.</p>
-                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="Broilers" data-price="8500">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <div class="product-card" data-category="poultry">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1598965675045-45c5e72c7d05?w=600&h=400&fit=crop" alt="Farm Eggs" loading="lazy">
-                        <span class="badge-tag">₦3,500</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Farm Eggs</h3>
-                        <p>Big, chemical-free fresh eggs.</p>
-                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="Farm Eggs" data-price="3500">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <div class="product-card" data-category="poultry">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=600&h=400&fit=crop" alt="Noilers" loading="lazy">
-                        <span class="badge-tag">₦7,500</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Noilers</h3>
-                        <p>Fresh eggs and premium meat.</p>
-                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="Noilers" data-price="7500">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <!-- Piggery -->
-                <div class="product-card" data-category="piggery">
-                    <div class="card-img-wrapper">
-                        <img src="images/prod_piggery_1779837888029.png" alt="Piggery" loading="lazy">
-                        <span class="badge-tag">₦25,000</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Piggery</h3>
-                        <p>Healthy, well-fed, and fat pigs.</p>
-                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="Piggery" data-price="25000">Add to Cart</button>
-                    </div>
-                </div>
-
-                <!-- Goats -->
-                <div class="product-card" data-category="goats">
-                    <div class="card-img-wrapper">
-                        <img src="images/prod_goats_1779837901590.png" alt="Goats" loading="lazy">
-                        <span class="badge-tag">₦50,000</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Goats</h3>
-                        <p>Premium pasture-raised healthy goats.</p>
-                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="Goats" data-price="50000">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <!-- Snails -->
-                <div class="product-card" data-category="snails">
-                    <div class="card-img-wrapper">
-                        <img src="images/prod_snails_1779837913901.png" alt="Snails" loading="lazy">
-                        <span class="badge-tag">₦15,000</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Snails</h3>
-                        <p>Big and healthy giant African snails.</p>
-                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="Snails" data-price="15000">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <!-- Fishery -->
-                <div class="product-card" data-category="fishery">
-                    <div class="card-img-wrapper">
-                        <img src="images/prod_fishes_1779837931706.png" alt="Fishes" loading="lazy">
-                        <span class="badge-tag">₦5,500</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Fresh Fishes</h3>
-                        <p>Naturally treated water fishes.</p>
-                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="Fresh Fishes" data-price="5500">Add to Cart</button>
-                    </div>
+            <div class="product-grid" id="dynamic-product-grid">
+                <div style="text-align:center; padding: 40px; color: var(--text-muted); width: 100%;">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 10px;">Loading products...</p>
                 </div>
             </div>
         </div>

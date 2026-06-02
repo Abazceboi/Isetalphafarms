@@ -85,37 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         revealObserver.observe(el);
     });
 
-    /* --- PRODUCT FILTERING --- */
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const productCards = document.querySelectorAll('.product-card');
-
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active from all buttons
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const filterValue = btn.getAttribute('data-filter');
-
-            productCards.forEach(card => {
-                const category = card.getAttribute('data-category');
-                
-                if (filterValue === 'all' || filterValue === category) {
-                    card.style.display = 'block';
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'scale(1)';
-                    }, 50);
-                } else {
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.8)';
-                    setTimeout(() => {
-                        card.style.display = 'none';
-                    }, 300);
-                }
-            });
-        });
-    });
+    /* --- PRODUCT FILTERING (Handled dynamically after fetch) --- */
 
     /* --- STATS COUNTER ANIMATION --- */
     const counters = document.querySelectorAll('.counter');
@@ -330,30 +300,105 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Add to Cart
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const name = e.target.getAttribute('data-name');
-            const price = parseFloat(e.target.getAttribute('data-price'));
+    // Dynamic Product Fetching
+    const fetchAndRenderProducts = async () => {
+        const grid = document.getElementById('dynamic-product-grid');
+        if (!grid) return;
 
-            const existingItem = cart.find(item => item.name === name);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ name, price, quantity: 1 });
-            }
-            updateCart();
+        try {
+            const res = await fetch('/api/products');
+            const products = await res.json();
             
-            // Visual feedback
-            const originalText = e.target.innerHTML;
-            e.target.innerHTML = '<i class="fas fa-check"></i> Added';
-            e.target.style.backgroundColor = 'var(--primary-dark)';
-            setTimeout(() => {
-                e.target.innerHTML = originalText;
-                e.target.style.backgroundColor = '';
-            }, 1500);
-        });
-    });
+            grid.innerHTML = '';
+            
+            if (products.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No products currently available.</p>';
+                return;
+            }
+
+            products.forEach(p => {
+                const imgUrl = p.image_url ? p.image_url : 'https://via.placeholder.com/600x400?text=No+Image';
+                const card = document.createElement('div');
+                card.className = 'product-card reveal-up active';
+                card.setAttribute('data-category', p.category);
+                card.innerHTML = `
+                    <div class="card-img-wrapper">
+                        <img src="${imgUrl}" alt="${p.name}" loading="lazy">
+                        <span class="badge-tag">${formatNaira(p.price)}</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>${p.name}</h3>
+                        <p>${p.description}</p>
+                        <button class="btn btn-primary btn-block add-to-cart-btn" data-name="${p.name}" data-price="${p.price}">Add to Cart</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Re-bind Filter Buttons
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const productCards = document.querySelectorAll('.product-card');
+
+            // Clone and replace filter buttons to remove old stale listeners just in case
+            filterBtns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    newBtn.classList.add('active');
+
+                    const filterValue = newBtn.getAttribute('data-filter');
+
+                    productCards.forEach(card => {
+                        const category = card.getAttribute('data-category');
+                        if (filterValue === 'all' || filterValue === category) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'scale(1)';
+                            }, 50);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.8)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+
+            // Re-bind add to cart
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const name = e.target.getAttribute('data-name');
+                    const price = parseFloat(e.target.getAttribute('data-price'));
+
+                    const existingItem = cart.find(item => item.name === name);
+                    if (existingItem) {
+                        existingItem.quantity++;
+                    } else {
+                        cart.push({ name, price, quantity: 1 });
+                    }
+                    updateCart();
+                    
+                    const originalText = e.target.innerHTML;
+                    e.target.innerHTML = '<i class="fas fa-check"></i> Added';
+                    e.target.style.backgroundColor = 'var(--primary-dark)';
+                    setTimeout(() => {
+                        e.target.innerHTML = originalText;
+                        e.target.style.backgroundColor = '';
+                    }, 1500);
+                });
+            });
+
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load products.</p>';
+        }
+    };
+
+    fetchAndRenderProducts();
 
     // Checkout Submit
     if (checkoutForm) {
